@@ -1,6 +1,7 @@
 // Need account names, encryptedSummonerId, championId -> championName.
 // Will add same-champion mastery scores together between all accounts 
 const fs = require('fs');
+let championJsonFile = '/home/nwsop/Desktop/JSProjects/league_mastery/champion.json';
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
 const dotEnv = require('dotenv').config();
 const xhrGetUniqueID = new XMLHttpRequest();
@@ -8,7 +9,7 @@ const xhrGetChampionMasteries = new XMLHttpRequest();
 const apiKey = process.env.RIOT_TOKEN;
 let accounts = ['Sopyo'];
 const baseURL = 'https://na1.api.riotgames.com';
-const summonersLink = '/lol/summoner/v4/summoners/by-name/' + accounts[0];
+const summonersLink = '/lol/summoner/v4/summoners/by-name/';
 const masteryVal = {
         'Usernames': ['My Dream LCS', 'From Iron', 'XTN Jackpot', 'FG Bugi', 'EG Impact'],
 
@@ -17,7 +18,7 @@ const masteryVal = {
 
 // Reading and parsing json file
 const getChampionKeys = () => {
-    fs.readFile('/home/nwsop/Desktop/JSProjects/LOLMastery/champion.json', (err, data) => {
+    fs.readFile(championJsonFile, (err, data) => {
         if(err) {
             console.log(err)
             return
@@ -46,7 +47,7 @@ const getChampionKeys = () => {
 
 const getChampionNameFromKey = (key) => {
     let result;
-    let data = fs.readFileSync('/home/nwsop/Desktop/JSProjects/LOLMastery/champion.json')
+    let data = fs.readFileSync(championJsonFile)
     try {
         championJson = JSON.parse(data);
         for(i in championJson['data']) {
@@ -73,35 +74,38 @@ console.log(getChampionKeys());
 //     }
 // }
 
-xhrGetUniqueID.responseType = 'json';
-xhrGetUniqueID.onreadystatechange = () => {
-    //console.log(xhrGetUniqueID.responseText);
-    try {
-        let uniqueID = [JSON.parse(xhrGetUniqueID.responseText)["id"]]
-        console.log("Your unique ID is: " + uniqueID)
-    } catch (error) {
-        
+const getUniqueId = (userAccounts) => {
+    xhrGetUniqueID.responseType = 'json';
+    xhrGetUniqueID.onreadystatechange = () => {
+        try {
+                console.log("What is this: "+xhrGetUniqueID.responseText);
+                let uniqueID = [JSON.parse(xhrGetUniqueID.responseText)["id"]];
+                console.log("Your unique ID is: " + uniqueID) 
+            
+        } catch (error) {
+            console.log(error)
+        }
     }
+    userAccounts.forEach(account => {
+        xhrGetUniqueID.open('GET', baseURL + summonersLink + account);
+        const apiHeader = {
+            "X-Riot-Token": apiKey
+        }
+
+        for(const [key, value] of Object.entries(apiHeader)) {
+            xhrGetUniqueID.setRequestHeader(key, value)
+        }
+
+        /* Another way of grabbing the keys and values from the API header /*
+        Object.keys(apiHeader).forEach(key => {
+            xhrGetUniqueID.setRequestHeader(key, apiHeader[key])
+        });
+        */
+        console.log('Making request BABABOOEY');
+        xhrGetUniqueID.send();
+    });
 }
-//console.log('Summoners Link is equal to: ' + summonersLink);
-xhrGetUniqueID.open('GET', baseURL + summonersLink);
-const apiHeader = {
-    "X-Riot-Token": apiKey
-}
-
-for(const [key, value] of Object.entries(apiHeader)) {
-    xhrGetUniqueID.setRequestHeader(key, value)
-}
-
-/* Another way of grabbing the keys and values from the API header /*
-Object.keys(apiHeader).forEach(key => {
-    xhrGetUniqueID.setRequestHeader(key, apiHeader[key])
-});
-*/
-
-xhrGetUniqueID.send();
-//
-
+getUniqueId(masteryVal.Usernames)
 // Find Champion Mastery
 let encryptedSummonerId = 'CYhhK0MzX8tGAgWtm2JPW1-W5PjR1Dpr30yyb3Npum_6En4';
 let championKey = '84';
@@ -132,5 +136,5 @@ Object.keys(apiHeader).forEach(key => {
     xhrGetUniqueID.setRequestHeader(key, apiHeader[key])
 });
 */
-
+console.log('Making request BABABOOEY2');
 xhrGetChampionMasteries.send();
