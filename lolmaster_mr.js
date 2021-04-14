@@ -17,7 +17,7 @@ const masteryVal = {
 
 // Reading and parsing json file
 const getChampionKeys = () => {
-    fs.readFile('/home/nwsop/Desktop/JSProjects/LOLMastery/champion.json', (err, data) => {
+    fs.readFile('/home/nwsop/Desktop/JSProjects/league_mastery/champion.json', (err, data) => {
         if(err) {
             console.log(err)
             return
@@ -41,7 +41,6 @@ const getChampionKeys = () => {
         console.log('Total Champions: ' + champCount);
         return championJson;
     })
-
 }
 
 const getChampionNameFromKey = (key) => {
@@ -73,6 +72,9 @@ console.log(getChampionKeys());
 //     }
 // }
 
+
+// Start Function
+
 xhrGetUniqueID.responseType = 'json';
 xhrGetUniqueID.onreadystatechange = () => {
     //console.log(xhrGetUniqueID.responseText);
@@ -100,7 +102,7 @@ Object.keys(apiHeader).forEach(key => {
 */
 
 xhrGetUniqueID.send();
-//
+// END Function
 
 // Find Champion Mastery
 let encryptedSummonerId = 'CYhhK0MzX8tGAgWtm2JPW1-W5PjR1Dpr30yyb3Npum_6En4';
@@ -134,3 +136,4 @@ Object.keys(apiHeader).forEach(key => {
 */
 
 xhrGetChampionMasteries.send();
+
